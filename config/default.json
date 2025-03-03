@@ -1,0 +1,5 @@
+{
+  "mongoURI": "mongodb+srv://passion_777:passion_777@jack.fv2ru.mongodb.net/?retryWrites=true&w=majority&appName=Jack",
+  "jwtSecret": "hydrapad",
+  "jwtExpiration": 360000
+}
