@@ -12,7 +12,6 @@ const router: Router = Router();
 // @desc    Register presale token info
 // @access  Public
 router.post("/create", async (req: Request, res: Response) => {
- 
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res
@@ -23,7 +22,6 @@ router.post("/create", async (req: Request, res: Response) => {
   try {
     const { tokenAddress } = req.body;
     let token = await Token.findOne({ tokenAddress });
-
     // if (token) {
     //   return res.status(HttpStatusCodes.BAD_REQUEST).json({
     //     errors: [{ msg: "Presale token already exists" }],
@@ -59,6 +57,7 @@ router.get(
     res.json(token);
   }
 );
+
 router.get("/get-all", async (req: Request, res: Response) => {
   const tokens = await Token.find();
   res.json(tokens);
