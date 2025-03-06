@@ -3,11 +3,13 @@ import dotenv from "dotenv";
 import cors from "cors";
 import connectDB from "../config/database";
 import token from "./routes/api/token";
-import alchemy from "./alchemy";
+import alchemyConfig, { alchemy } from "./alchemyConfig";
 import path from "path";
+import http from "http";
+import { Server } from "socket.io";
+import tokenSocket from "./socket/token";
 
 dotenv.config();
-alchemy();
 
 const app: Application = express();
 
@@ -19,6 +21,19 @@ app.use(
 
 // Connect MongoDB
 connectDB();
+
+// Socket
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+  },
+});
+tokenSocket(io);
+
+// Alchemy
+alchemyConfig();
+
 
 // Middleware
 app.use(express.json());
@@ -39,9 +54,10 @@ if (process.env.NODE_ENV === "production") {
   });
 }
 
+
 const port = process.env.PORT || 5000;
 
-app.listen(port, () => {
+server.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
 

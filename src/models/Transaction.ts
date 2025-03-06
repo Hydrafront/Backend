@@ -1,14 +1,15 @@
 import { model, Schema } from "mongoose";
 
 export type TTransaction = {
-  type: "buy" | "sell";
+  type: "Buy" | "Sell";
   chainId: number;
-  dex: string;
+  price: number;
+  usd: number;
+  eth: number;
+  token: number;
+  txHash: string;
   tokenAddress: string;
   maker: string;
-  amount: number;
-  txHash: string;
-  signature: string;
 };
 export interface ITransaction extends TTransaction, Document {}
 
@@ -22,10 +23,6 @@ const transactionSchema: Schema = new Schema(
       type: Number,
       required: true,
     },
-    dex: {
-      type: String,
-      required: true,
-    },
     tokenAddress: {
       type: String,
       required: true,
@@ -34,15 +31,23 @@ const transactionSchema: Schema = new Schema(
       type: String,
       required: true,
     },
-    amount: {
+    price: {
+      type: Number,
+      required: true,
+    },
+    usd: {
+      type: Number,
+      required: true,
+    },
+    eth: {
+      type: Number,
+      required: true,
+    },
+    token: {
       type: Number,
       required: true,
     },
     txHash: {
-      type: String,
-      required: true,
-    },
-    signature: {
       type: String,
       required: true,
     },

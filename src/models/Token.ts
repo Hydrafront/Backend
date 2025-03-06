@@ -20,7 +20,6 @@ export type TToken = {
   marketCap: number;
   price: number;
   volume: number;
-  transactionCount: number;
   holders: string[];
 };
 export interface IToken extends TToken, Document {}
@@ -104,14 +103,6 @@ const tokenSchema: Schema = new Schema(
       type: Number,
       default: 0,
     },
-    transactions: [
-      {
-        buyer: String,
-        amount: Number,
-        txHash: String,
-        createdAt: String,
-      },
-    ],
     holders: [String],
   },
   { timestamps: true }
