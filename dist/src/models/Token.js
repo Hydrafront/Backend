@@ -79,14 +79,6 @@ const tokenSchema = new mongoose_1.Schema({
         type: Number,
         default: 0,
     },
-    transactions: [
-        {
-            buyer: String,
-            amount: Number,
-            txHash: String,
-            createdAt: String,
-        },
-    ],
     holders: [String],
 }, { timestamps: true });
 const Token = (0, mongoose_1.model)("Token", tokenSchema);

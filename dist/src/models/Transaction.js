@@ -10,10 +10,6 @@ const transactionSchema = new mongoose_1.Schema({
         type: Number,
         required: true,
     },
-    dex: {
-        type: String,
-        required: true,
-    },
     tokenAddress: {
         type: String,
         required: true,
@@ -22,15 +18,23 @@ const transactionSchema = new mongoose_1.Schema({
         type: String,
         required: true,
     },
-    amount: {
+    price: {
+        type: Number,
+        required: true,
+    },
+    usd: {
+        type: Number,
+        required: true,
+    },
+    eth: {
+        type: Number,
+        required: true,
+    },
+    token: {
         type: Number,
         required: true,
     },
     txHash: {
-        type: String,
-        required: true,
-    },
-    signature: {
         type: String,
         required: true,
     },

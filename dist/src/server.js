@@ -8,16 +8,28 @@ const dotenv_1 = __importDefault(require("dotenv"));
 const cors_1 = __importDefault(require("cors"));
 const database_1 = __importDefault(require("../config/database"));
 const token_1 = __importDefault(require("./routes/api/token"));
-const alchemy_1 = __importDefault(require("./alchemy"));
+const alchemyConfig_1 = __importDefault(require("./alchemyConfig"));
 const path_1 = __importDefault(require("path"));
+const http_1 = __importDefault(require("http"));
+const socket_io_1 = require("socket.io");
+const token_2 = __importDefault(require("./socket/token"));
 dotenv_1.default.config();
-(0, alchemy_1.default)();
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)({
     origin: "*",
 }));
 // Connect MongoDB
 (0, database_1.default)();
+// Socket
+const server = http_1.default.createServer(app);
+const io = new socket_io_1.Server(server, {
+    cors: {
+        origin: "*",
+    },
+});
+(0, token_2.default)(io);
+// Alchemy
+(0, alchemyConfig_1.default)();
 // Middleware
 app.use(express_1.default.json());
 // API routes
@@ -33,6 +45,10 @@ if (process.env.NODE_ENV === "production") {
         res.sendFile(path_1.default.join(__dirname, "../../frontend/dist/index.html"));
     });
 }
+const port = process.env.PORT || 5000;
+server.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+});
 // Export app for Vercel
 exports.default = app;
 //# sourceMappingURL=server.js.map
