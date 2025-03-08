@@ -66,10 +66,74 @@ router.get(
 // @route   GET api/token/get-all
 // @desc    Get all tokens
 // @access  Public
-router.get("/get-all", async (req: Request, res: Response) => {
+router.post("/get", async (req: Request, res: Response) => {
+  const {
+    chainId,
+    sort,
+    dex,
+    age,
+    minProgress,
+    maxProgress,
+    boosted,
+    ads,
+    search,
+    page,
+  } = req.body;
+
+  const query: any = {};
+
+  if (chainId) query.chainId = chainId;
+  if (dex) query.dex = dex;
+  if (age) {
+    if (age[0] === "≤")
+      query.createdAt = {
+        $lte: new Date(
+          Date.now() -
+            Number(age.slice(1, age.length - 1)) * 24 * 60 * 60 * 1000
+        ),
+      };
+    if (age[0] === "≥")
+      query.createdAt = {
+        $gte: new Date(
+          Date.now() -
+            Number(age.slice(1, age.length - 1)) * 24 * 60 * 60 * 1000
+        ),
+      };
+  }
+  if (minProgress && !minProgress)
+    query.progress = {
+      $gte: Number(minProgress.slice(0, minProgress.length - 1)),
+    };
+  if (maxProgress && !maxProgress)
+    query.progress = {
+      $lte: Number(maxProgress.slice(0, maxProgress.length - 1)),
+    };
+  if (minProgress && maxProgress)
+    query.progress = {
+      $gte: Number(minProgress.slice(0, minProgress.length - 1)),
+      $lte: Number(maxProgress.slice(0, maxProgress.length - 1)),
+    };
+  if (boosted) query.boosted = boosted;
+  // if (ads) query.ads = ads;
+  if (search)
+    query.$or = [
+      { name: { $regex: search, $options: "i" } },
+      { symbol: { $regex: search, $options: "i" } },
+      { description: { $regex: search, $options: "i" } },
+      { tokenAddress: { $regex: search, $options: "i" } },
+    ];
+  const limit = 10;
+  console.log(sort)
+
   try {
-    const tokens = await Token.find();
-    res.json(tokens);
+    const tokenCount = await Token.countDocuments({ ...query }).sort({
+      [sort]: -1,
+    });
+    const tokens = await Token.find({ ...query })
+      .sort({ [sort]: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit);
+    res.json({ tokens, tokenCount });
   } catch (err) {
     console.error(err.message);
     res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).send("Server Error");
@@ -103,6 +167,11 @@ router.post("/save-transaction", async (req: Request, res: Response) => {
     const txFields = {
       ...transaction,
     };
+    await Token.findOneAndUpdate(
+      { tokenAddress: transaction.tokenAddress },
+      { $inc: { transactionCount: 1, volume: transaction.usd } },
+      { new: true }
+    );
     const newTransaction = await Transaction.create(txFields);
     res.json(newTransaction);
   } catch (err) {

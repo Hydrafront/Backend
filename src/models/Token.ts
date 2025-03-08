@@ -14,13 +14,19 @@ export type TToken = {
   telegram: string;
   twitter: string;
   discord: string;
-  initialSupply: number;
+  initialBuy: number;
   boost: number;
   progress: number;
   marketCap: number;
   price: number;
   volume: number;
+  makerCount: number;
+  _5M: number;
+  _1H: number;
+  _6H: number;
+  _24H: number;
   holders: string[];
+  transactionCount: number;
 };
 export interface IToken extends TToken, Document {}
 
@@ -79,7 +85,7 @@ const tokenSchema: Schema = new Schema(
     discord: {
       type: String,
     },
-    initialSupply: {
+    initialBuy: {
       type: Number,
       default: 0,
     },
@@ -89,7 +95,7 @@ const tokenSchema: Schema = new Schema(
     },
     progress: {
       type: Number,
-      default: 0,
+      required: true,
     },
     marketCap: {
       type: Number,
@@ -104,6 +110,30 @@ const tokenSchema: Schema = new Schema(
       default: 0,
     },
     holders: [String],
+    transactionCount: {
+      type: Number,
+      default: 0,
+    },
+    makerCount: {
+      type: Number,
+      default: 0,
+    },
+    _5M: {
+      type: Number,
+      default: 0,
+    },
+    _1H: {
+      type: Number,
+      default: 0,
+    },
+    _6H: {
+      type: Number,
+      default: 0,
+    },
+    _24H: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true }
 );
