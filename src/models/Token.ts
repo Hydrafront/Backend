@@ -45,8 +45,8 @@ const tokenSchema: Schema = new Schema(
       required: true,
     },
     dex: {
-      type: String,
-      required: true,
+      name: String,
+      address: String,
     },
     name: {
       type: String,

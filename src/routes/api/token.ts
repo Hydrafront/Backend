@@ -149,7 +149,7 @@ router.get(
     try {
       const transactions = await Transaction.find({
         tokenAddress: req.params.tokenAddress,
-      });
+      }).sort({ createdAt: 1 });
       res.json(transactions);
     } catch (err) {
       console.error(err.message);
