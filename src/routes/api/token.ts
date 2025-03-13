@@ -185,8 +185,11 @@ router.post("/save-transaction", async (req: Request, res: Response) => {
 router.put("/update-boosted", async (req: Request, res: Response) => {
   try {
     const { tokenAddress, boost } = req.body;
-    await Token.findOneAndUpdate({ tokenAddress }, { boost });
-    res.json({ msg: "Token boosted updated" });
+    const token = await Token.findOneAndUpdate(
+      { tokenAddress },
+      { $inc: { boost } }
+    );
+    res.json({ msg: "Token boosted updated", boost: token.boost });
   } catch (err) {
     console.error(err.message);
     res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).send("Server Error");
