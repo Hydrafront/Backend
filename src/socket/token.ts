@@ -26,7 +26,9 @@ export default (io: any) => {
         }
       );
     });
-
+    socket.on("update-boosted", (boost: number) => {
+      io.emit("update-boosted", boost);
+    });
     socket.on("disconnect", () => {
       console.log("Client disconnected");
     });

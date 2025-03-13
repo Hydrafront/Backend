@@ -123,7 +123,6 @@ router.post("/get", async (req: Request, res: Response) => {
       { tokenAddress: { $regex: search, $options: "i" } },
     ];
   const limit = 10;
-  console.log(sort)
 
   try {
     const tokenCount = await Token.countDocuments({ ...query }).sort({
@@ -174,6 +173,20 @@ router.post("/save-transaction", async (req: Request, res: Response) => {
     );
     const newTransaction = await Transaction.create(txFields);
     res.json(newTransaction);
+  } catch (err) {
+    console.error(err.message);
+    res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).send("Server Error");
+  }
+});
+
+// @route   PUT api/token/update-boosted
+// @desc    Update boosted
+// @access  Public
+router.put("/update-boosted", async (req: Request, res: Response) => {
+  try {
+    const { tokenAddress, boost } = req.body;
+    await Token.findOneAndUpdate({ tokenAddress }, { boost });
+    res.json({ msg: "Token boosted updated" });
   } catch (err) {
     console.error(err.message);
     res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).send("Server Error");
