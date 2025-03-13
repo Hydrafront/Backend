@@ -113,7 +113,7 @@ router.post("/get", async (req: Request, res: Response) => {
       $gte: Number(minProgress.slice(0, minProgress.length - 1)),
       $lte: Number(maxProgress.slice(0, maxProgress.length - 1)),
     };
-  if (boosted) query.boosted = boosted;
+  if (boosted) query.boost = { $gt: 0 };
   // if (ads) query.ads = ads;
   if (search)
     query.$or = [
