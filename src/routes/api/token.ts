@@ -122,7 +122,7 @@ router.post("/get", async (req: Request, res: Response) => {
       { description: { $regex: search, $options: "i" } },
       { tokenAddress: { $regex: search, $options: "i" } },
     ];
-  const limit = 10;
+  const limit = 5;
 
   try {
     const tokenCount = await Token.countDocuments({ ...query }).sort({
