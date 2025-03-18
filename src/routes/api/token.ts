@@ -157,6 +157,34 @@ router.get(
   }
 );
 
+router.get(
+  "/get-transactions-in-range/:tokenAddress/:from/:to",
+  async (req: Request, res: Response) => {
+    try {
+      const { tokenAddress, from, to } = req.params;
+      const allTokens = await Transaction.find({ tokenAddress }).sort({
+        createdAt: 1,
+      });
+      const oldestToken = allTokens[0];
+      const transactions = await Transaction.find({
+        tokenAddress,
+        // createdAt: {
+        //   $gte: new Date(Number(from) * 1000),
+        //   $lte: new Date(Number(to) * 1000),
+        // },
+      }).sort({ createdAt: -1 });
+      console.log(transactions.length);
+      res.json({
+        data: transactions,
+        noData: new Date(oldestToken.createdAt) > new Date(Number(to) * 1000),
+      });
+    } catch (err) {
+      console.error(err.message);
+      res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).send("Server Error");
+    }
+  }
+);
+
 // @route   POST api/token/save-transaction
 // @desc    Save transaction
 // @access  Public

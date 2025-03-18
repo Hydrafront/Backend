@@ -10,6 +10,7 @@ export type TTransaction = {
   txHash: string;
   tokenAddress: string;
   maker: string;
+  createdAt: string;
 };
 export interface ITransaction extends TTransaction, Document {}
 
