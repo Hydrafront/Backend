@@ -39,10 +39,10 @@ app.use(
 // API routes
 app.use("/api/token", token);
 
-// Health check route
-app.get("/api", (req: Request, res: Response) => {
-  res.send("API Running");
-});
+// // Health check route
+// app.get("/api", (req: Request, res: Response) => {
+//   res.send("API Running");
+// });
 
 // Error handling middleware
 app.use((err: any, req: Request, res: Response, next: any) => {
