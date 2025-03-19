@@ -40,7 +40,7 @@ app.use(
 app.use("/api/token", token);
 
 // Health check route
-app.get("/api", (req: Request, res: Response) => {
+app.get("/test", (req: Request, res: Response) => {
   res.send("API Running");
 });
 
