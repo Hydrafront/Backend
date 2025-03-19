@@ -13,12 +13,6 @@ dotenv.config();
 
 const app: Application = express();
 
-app.use(
-  cors({
-    origin: "*",
-  })
-);
-
 // Connect MongoDB
 connectDB();
 
@@ -34,9 +28,13 @@ tokenSocket(io);
 // Alchemy
 alchemyConfig();
 
-
 // Middleware
 app.use(express.json());
+app.use(
+  cors({
+    origin: "*",
+  })
+);
 
 // API routes
 app.use("/api/token", token);
