@@ -103,6 +103,7 @@ const tokenSchema: Schema = new Schema(
     },
     price: {
       type: Number,
+      required: true,
     },
     volume: {
       type: Number,
