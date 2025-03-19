@@ -15,8 +15,8 @@ const tokenSchema = new mongoose_1.Schema({
         required: true,
     },
     dex: {
-        type: String,
-        required: true,
+        name: String,
+        address: String,
     },
     name: {
         type: String,
@@ -55,7 +55,7 @@ const tokenSchema = new mongoose_1.Schema({
     discord: {
         type: String,
     },
-    initialSupply: {
+    initialBuy: {
         type: Number,
         default: 0,
     },
@@ -65,7 +65,7 @@ const tokenSchema = new mongoose_1.Schema({
     },
     progress: {
         type: Number,
-        default: 0,
+        required: true,
     },
     marketCap: {
         type: Number,
@@ -80,6 +80,30 @@ const tokenSchema = new mongoose_1.Schema({
         default: 0,
     },
     holders: [String],
+    transactionCount: {
+        type: Number,
+        default: 0,
+    },
+    makerCount: {
+        type: Number,
+        default: 0,
+    },
+    _5M: {
+        type: Number,
+        default: 0,
+    },
+    _1H: {
+        type: Number,
+        default: 0,
+    },
+    _6H: {
+        type: Number,
+        default: 0,
+    },
+    _24H: {
+        type: Number,
+        default: 0,
+    },
 }, { timestamps: true });
 const Token = (0, mongoose_1.model)("Token", tokenSchema);
 exports.default = Token;

@@ -15,9 +15,6 @@ const socket_io_1 = require("socket.io");
 const token_2 = __importDefault(require("./socket/token"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
-app.use((0, cors_1.default)({
-    origin: "*",
-}));
 // Connect MongoDB
 (0, database_1.default)();
 // Socket
@@ -32,11 +29,19 @@ const io = new socket_io_1.Server(server, {
 (0, alchemyConfig_1.default)();
 // Middleware
 app.use(express_1.default.json());
+app.use((0, cors_1.default)({
+    origin: "*",
+}));
 // API routes
 app.use("/api/token", token_1.default);
 // Health check route
-app.get("/api", (req, res) => {
-    res.send("API Running");
+app.get("/testing", (req, res) => {
+    res.send("API is running!!!!!");
+});
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send('Something broke!');
 });
 // Serve frontend in production
 if (process.env.NODE_ENV === "production") {
