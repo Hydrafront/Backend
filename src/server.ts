@@ -44,6 +44,7 @@ app.get("/test", (req: Request, res: Response) => {
   res.send("API Running");
 });
 
+
 // Error handling middleware
 app.use((err: any, req: Request, res: Response, next: any) => {
   console.error(err.stack);
