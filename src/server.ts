@@ -39,15 +39,15 @@ app.use(
 // API routes
 app.use("/api/token", token);
 
+// Health check route
+app.get("/api", (req: Request, res: Response) => {
+  res.send("API Running");
+});
+
 // Error handling middleware
 app.use((err: any, req: Request, res: Response, next: any) => {
   console.error(err.stack);
   res.status(500).send('Something broke!');
-});
-
-// Health check route
-app.get("/api", (req: Request, res: Response) => {
-  res.send("API Running");
 });
 
 // Serve frontend in production
@@ -57,7 +57,6 @@ if (process.env.NODE_ENV === "production") {
     res.sendFile(path.join(__dirname, "../../frontend/dist/index.html"));
   });
 }
-
 
 const port = process.env.PORT || 5000;
 
