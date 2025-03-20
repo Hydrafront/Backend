@@ -65,7 +65,9 @@ router.get(
       }).sort({ createdAt: 1 });
       res.json({
         data: transactions,
-        noData: oldestToken ? new Date(oldestToken.createdAt) > new Date(Number(to) * 1000) : true,
+        noData: oldestToken
+          ? new Date(oldestToken.createdAt) > new Date(Number(to) * 1000)
+          : true,
       });
     } catch (err) {
       console.error(err.message);
@@ -98,7 +100,11 @@ router.post("/create", async (req: Request, res: Response) => {
       ...req.body.info,
     };
 
-    const newToken = await Token.create(tokenFields);
+    const newToken = await Token.create({
+      ...tokenFields,
+      logo: "/assets/images/default/default-logo.png",
+      banner: "/assets/images/default/default-banner.png",
+    });
     res.json({ token: newToken });
   } catch (err) {
     console.error(err.message);
@@ -106,12 +112,10 @@ router.post("/create", async (req: Request, res: Response) => {
   }
 });
 
-
 // @route   GET api/token/get-all
 // @desc    Get all tokens
 // @access  Public
 router.post("/get", async (req: Request, res: Response) => {
-  
   const {
     chainId,
     sort,
@@ -183,7 +187,6 @@ router.post("/get", async (req: Request, res: Response) => {
     res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).send("Server Error");
   }
 });
-
 
 // @route   POST api/token/save-transaction
 // @desc    Save transaction
