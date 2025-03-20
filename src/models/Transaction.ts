@@ -8,6 +8,7 @@ export type TTransaction = {
   eth: number;
   token: number;
   txHash: string;
+  symbol: string;
   tokenAddress: string;
   maker: string;
   createdAt: string;
@@ -25,6 +26,10 @@ const transactionSchema: Schema = new Schema(
       required: true,
     },
     tokenAddress: {
+      type: String,
+      required: true,
+    },
+    symbol: {
       type: String,
       required: true,
     },

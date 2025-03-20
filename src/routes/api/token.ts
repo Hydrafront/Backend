@@ -62,11 +62,10 @@ router.get(
         //   $gte: new Date(Number(from) * 1000),
         //   $lte: new Date(Number(to) * 1000),
         // },
-      }).sort({ createdAt: -1 });
-      console.log(transactions.length);
+      }).sort({ createdAt: 1 });
       res.json({
         data: transactions,
-        noData: new Date(oldestToken.createdAt) > new Date(Number(to) * 1000),
+        noData: oldestToken ? new Date(oldestToken.createdAt) > new Date(Number(to) * 1000) : true,
       });
     } catch (err) {
       console.error(err.message);

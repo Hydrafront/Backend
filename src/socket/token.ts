@@ -10,6 +10,11 @@ export default (io: any) => {
 
     socket.on("save-transaction", (transaction: any) => {
       io.emit("save-transaction", transaction);
+      socket.emit("send-transaction", {
+        price: transaction.price,
+        time: transaction.createdAt,
+        symbol: transaction.symbol,
+      });
     });
 
     socket.on("update-token-info", (data: any) => {
