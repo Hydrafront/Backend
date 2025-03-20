@@ -100,10 +100,11 @@ router.post("/create", async (req: Request, res: Response) => {
       ...req.body.info,
     };
 
+    console.log(tokenFields.logo);
     const newToken = await Token.create({
       ...tokenFields,
-      logo: "/assets/images/default/default-logo.png",
-      banner: "/assets/images/default/default-banner.png",
+      logo: tokenFields.logo || "/assets/images/default/default-logo.png",
+      banner: tokenFields.banner || "/assets/images/default/default-banner.png",
     });
     res.json({ token: newToken });
   } catch (err) {
