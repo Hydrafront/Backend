@@ -14,6 +14,7 @@ export default (io: any) => {
         price: transaction.price,
         time: transaction.createdAt,
         symbol: transaction.symbol,
+        volume: transaction.usd,
       });
     });
 
