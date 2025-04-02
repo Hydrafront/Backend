@@ -13,6 +13,12 @@ const router: Router = Router();
 router.get(
   "/get-by-address/:tokenAddress",
   async (req: Request, res: Response) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res
+        .status(HttpStatusCodes.BAD_REQUEST)
+        .json({ errors: errors.array() });
+    }
     try {
       const token = await Token.findOne({
         tokenAddress: req.params.tokenAddress,
@@ -35,6 +41,12 @@ router.get(
 router.get(
   "/get-transactions-by-address/:tokenAddress",
   async (req: Request, res: Response) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res
+        .status(HttpStatusCodes.BAD_REQUEST)
+        .json({ errors: errors.array() });
+    }
     try {
       const transactions = await Transaction.find({
         tokenAddress: req.params.tokenAddress,
@@ -50,6 +62,12 @@ router.get(
 router.get(
   "/get-transactions-in-range/:tokenAddress/:from/:to",
   async (req: Request, res: Response) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res
+        .status(HttpStatusCodes.BAD_REQUEST)
+        .json({ errors: errors.array() });
+    }
     try {
       const { tokenAddress, from, to } = req.params;
       const allTokens = await Transaction.find({ tokenAddress }).sort({
@@ -115,83 +133,96 @@ router.post("/create", async (req: Request, res: Response) => {
 // @route   GET api/token/get-all
 // @desc    Get all tokens
 // @access  Public
-router.post("/get", async (req: Request, res: Response) => {
-  const {
-    chainId,
-    sort,
-    dex,
-    age,
-    minProgress,
-    maxProgress,
-    boosted,
-    ads,
-    search,
-    page,
-  } = req.body;
+router.get(
+  "/get/:chainId/:sort/:dex/:age/:minProgress/:maxProgress/:boosted/:ads/:search/:page",
+  async (req: Request, res: Response) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res
+        .status(HttpStatusCodes.BAD_REQUEST)
+        .json({ errors: errors.array() });
+    }
+    const {
+      chainId,
+      sort,
+      dex,
+      age,
+      minProgress,
+      maxProgress,
+      boosted,
+      ads,
+      search,
+      page,
+    } = req.params;
 
-  const query: any = {};
+    const query: any = {};
 
-  if (chainId) query.chainId = chainId;
-  if (dex) query.dex = dex;
-  if (age) {
-    if (age[0] === "≤")
-      query.createdAt = {
-        $lte: new Date(
-          Date.now() -
-            Number(age.slice(1, age.length - 1)) * 24 * 60 * 60 * 1000
-        ),
+    if (chainId !== "undefined") query.chainId = chainId;
+    if (dex !== "undefined") query.dex = dex;
+    if (age !== "undefined") {
+      if (age[0] === "≤")
+        query.createdAt = {
+          $lte: new Date(
+            Date.now() -
+              Number(age.slice(1, age.length - 1)) * 24 * 60 * 60 * 1000
+          ),
+        };
+      if (age[0] === "≥")
+        query.createdAt = {
+          $gte: new Date(
+            Date.now() -
+              Number(age.slice(1, age.length - 1)) * 24 * 60 * 60 * 1000
+          ),
+        };
+    }
+    if (minProgress !== "undefined" && minProgress === "undefined")
+      query.progress = {
+        $gte: Number(minProgress.slice(0, minProgress.length - 1)),
       };
-    if (age[0] === "≥")
-      query.createdAt = {
-        $gte: new Date(
-          Date.now() -
-            Number(age.slice(1, age.length - 1)) * 24 * 60 * 60 * 1000
-        ),
+    if (maxProgress !== "undefined" && maxProgress === "undefined")
+      query.progress = {
+        $lte: Number(maxProgress.slice(0, maxProgress.length - 1)),
       };
-  }
-  if (minProgress && !minProgress)
-    query.progress = {
-      $gte: Number(minProgress.slice(0, minProgress.length - 1)),
-    };
-  if (maxProgress && !maxProgress)
-    query.progress = {
-      $lte: Number(maxProgress.slice(0, maxProgress.length - 1)),
-    };
-  if (minProgress && maxProgress)
-    query.progress = {
-      $gte: Number(minProgress.slice(0, minProgress.length - 1)),
-      $lte: Number(maxProgress.slice(0, maxProgress.length - 1)),
-    };
-  if (boosted) query.boost = { $gt: 0 };
-  // if (ads) query.ads = ads;
-  if (search)
-    query.$or = [
-      { name: { $regex: search, $options: "i" } },
-      { symbol: { $regex: search, $options: "i" } },
-      { description: { $regex: search, $options: "i" } },
-      { tokenAddress: { $regex: search, $options: "i" } },
-    ];
-  const limit = 5;
+    if (minProgress !== "undefined" && maxProgress !== "undefined")
+      query.progress = {
+        $gte: Number(minProgress.slice(0, minProgress.length - 1)),
+        $lte: Number(maxProgress.slice(0, maxProgress.length - 1)),
+      };
+    if (boosted !== "undefined" && boosted === "true") query.boost = { $gt: 0 };
+    // if (ads) query.ads = ads;
+    if (search !== "undefined")
+      query.$or = [
+        { name: { $regex: search, $options: "i" } },
+        { symbol: { $regex: search, $options: "i" } },
+        { description: { $regex: search, $options: "i" } },
+        { tokenAddress: { $regex: search, $options: "i" } },
+      ];
+    const limit = 5;
 
-  try {
-    const tokenCount = await Token.countDocuments({ ...query }).sort({
-      [sort]: -1,
-    });
-    const tokens = await Token.find({ ...query })
-      .sort({ [sort]: -1 })
-      .skip((page - 1) * limit)
-      .limit(limit);
-    res.json({ tokens, tokenCount });
-  } catch (err) {
-    console.error(err.message);
-    res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).send("Server Error");
+    try {
+      const tokenCount = await Token.countDocuments({ ...query });
+      const tokens = await Token.find({ ...query })
+        .sort(sort ? { [sort]: -1 } : { boost: -1, progress: -1 })
+        .skip((Number(page) - 1) * limit)
+        .limit(limit);
+      res.json({ tokens, tokenCount });
+    } catch (err) {
+      console.error(err.message);
+      res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).send("Server Error");
+    }
   }
-});
+);
 
 // @route   POST api/token/save-transaction
 // @desc    Save transaction
 // @access  Public
 router.post("/save-transaction", async (req: Request, res: Response) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res
+      .status(HttpStatusCodes.BAD_REQUEST)
+      .json({ errors: errors.array() });
+  }
   try {
     const { transaction } = req.body;
     const txFields = {
@@ -214,6 +245,12 @@ router.post("/save-transaction", async (req: Request, res: Response) => {
 // @desc    Update boosted
 // @access  Public
 router.put("/update-boosted", async (req: Request, res: Response) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res
+      .status(HttpStatusCodes.BAD_REQUEST)
+      .json({ errors: errors.array() });
+  }
   try {
     const { tokenAddress, boost } = req.body;
     const token = await Token.findOneAndUpdate(
@@ -222,7 +259,25 @@ router.put("/update-boosted", async (req: Request, res: Response) => {
     );
     res.json({ msg: "Token boosted updated", boost: token.boost });
   } catch (err) {
-    console.error(err.message);
+    res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).send("Server Error");
+  }
+});
+
+router.get("/get-trending-tokens", async (req: Request, res: Response) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res
+      .status(HttpStatusCodes.BAD_REQUEST)
+      .json({ errors: errors.array() });
+  }
+  try {
+    const tokens = await Token.find({ boost: { $gt: 0 } })
+      .sort({
+        boost: -1,
+      })
+      .limit(30);
+    res.json(tokens);
+  } catch (error) {
     res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).send("Server Error");
   }
 });
