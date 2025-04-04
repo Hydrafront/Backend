@@ -2,13 +2,12 @@ import express, { Application, Request, Response } from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import connectDB from "../config/database";
-import alchemyConfig, { alchemy } from "./alchemyConfig";
 import path from "path";
 import http from "http";
 import { Server } from "socket.io";
 import tokenSocket from "./socket/token";
 import tokenRoute from "./routes/api/token";
-import otherRoute from './routes/api/other';
+import { generateSignature } from "./utils/getSignature";
 
 dotenv.config();
 
@@ -26,9 +25,6 @@ const io = new Server(server, {
 });
 tokenSocket(io);
 
-// Alchemy
-alchemyConfig();
-
 // Middleware
 app.use(express.json());
 app.use(
@@ -39,13 +35,11 @@ app.use(
 
 // API routes
 app.use("/api/token", tokenRoute);
-app.use("/api/other", otherRoute);
 
 // Health check route
 app.get("/testing", (req: Request, res: Response) => {
   res.send("API is running!!!!!");
 });
-
 
 // Error handling middleware
 app.use((err: any, req: Request, res: Response, next: any) => {

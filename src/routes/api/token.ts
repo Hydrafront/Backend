@@ -5,6 +5,7 @@ import HttpStatusCodes from "http-status-codes";
 import Request from "../../types/Request";
 import Token from "../../models/Token";
 import Transaction from "../../models/Transaction";
+import { generateSignature } from "../../utils/getSignature";
 const router: Router = Router();
 
 // @route   GET api/token/get-by-address/:tokenAddress
@@ -281,5 +282,29 @@ router.get("/get-trending-tokens", async (req: Request, res: Response) => {
     res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).send("Server Error");
   }
 });
+
+router.get(
+  "/get-signature/:name/:symbol/:factory/:chainId/:address",
+  async (req: Request, res: Response) => {
+    const { name, symbol, factory, chainId, address } = req.params;
+    const nonce = Date.now().toString();
+    const token = await Token.findOne({ symbol });
+    if (token) {
+      return res.status(HttpStatusCodes.BAD_REQUEST).json({
+        errors: [{ msg: "Token symbol is invalid!" }],
+      });
+    }
+    const { signature } = await generateSignature(
+      name,
+      symbol,
+      nonce,
+      factory,
+      chainId,
+      address,
+      process.env.WALLET_PRIVATE_KEY
+    );
+    res.json({ signature, nonce });
+  }
+);
 
 export default router;
