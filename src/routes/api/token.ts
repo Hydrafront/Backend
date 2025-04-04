@@ -106,13 +106,13 @@ router.post("/create", async (req: Request, res: Response) => {
   }
 
   try {
-    const { tokenAddress } = req.body;
-    let token = await Token.findOne({ tokenAddress });
-    // if (token) {
-    //   return res.status(HttpStatusCodes.BAD_REQUEST).json({
-    //     errors: [{ msg: "Presale token already exists" }],
-    //   });
-    // }
+    const { tokenAddress, chainId } = req.body;
+    let token = await Token.findOne({ tokenAddress, chainId });
+    if (token) {
+      return res.status(HttpStatusCodes.BAD_REQUEST).json({
+        errors: [{ msg: "Presale token already exists" }],
+      });
+    }
 
     const tokenFields = {
       tokenAddress,
@@ -288,7 +288,7 @@ router.get(
   async (req: Request, res: Response) => {
     const { name, symbol, factory, chainId, address } = req.params;
     const nonce = Date.now().toString();
-    const token = await Token.findOne({ symbol });
+    const token = await Token.findOne({ symbol, chainId });
     if (token) {
       return res.status(HttpStatusCodes.BAD_REQUEST).json({
         error: "Token symbol is invalid!",
