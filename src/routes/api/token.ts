@@ -291,7 +291,7 @@ router.get(
     const token = await Token.findOne({ symbol });
     if (token) {
       return res.status(HttpStatusCodes.BAD_REQUEST).json({
-        errors: [{ msg: "Token symbol is invalid!" }],
+        error: "Token symbol is invalid!",
       });
     }
     const { signature } = await generateSignature(
