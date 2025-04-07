@@ -287,6 +287,7 @@ router.get(
   "/get-signature/:name/:symbol/:factory/:chainId/:address",
   async (req: Request, res: Response) => {
     const { name, symbol, factory, chainId, address } = req.params;
+    console.log(req.params)
     const nonce = Date.now().toString();
     const token = await Token.findOne({ symbol, chainId });
     if (token) {
